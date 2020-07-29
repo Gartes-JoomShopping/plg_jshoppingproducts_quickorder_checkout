@@ -1,0 +1,1 @@
+# plg_jshoppingproducts_quickorder_checkout
