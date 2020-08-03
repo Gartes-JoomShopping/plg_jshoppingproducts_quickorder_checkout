@@ -14,15 +14,18 @@ class plgJshoppingCheckoutQuickOrder_checkout extends JPlugin
         
         $checkoutOrderModel = JSFactory::getModel('checkoutOrder', 'jshop');
 
-        $adv_user = JSFactory::getUser();
-        $adv_user->l_name = $this->app->input->get('l_name' , null ) ;
-        $adv_user->phone = $this->app->input->get('phone' , null ) ;
-
         $post = [] ;
-        $product_id = 77 ;
-        $quantity = 1 ;
         $attribut = [] ;
         $freeattribut = false ;
+
+        $adv_user = JSFactory::getUser();
+        $adv_user->l_name = $this->app->input->get('l_name' , null , 'STRING' ) ;
+        $adv_user->phone = $this->app->input->get('phone' , null  ) ;
+        $category_id = $this->app->input->get('category_id' , null , 'INT') ;
+        $product_id = $this->app->input->get('product_id' , null , 'INT' ) ;
+        $quantity = 1 ;
+
+
 
         $cart->add($product_id, $quantity, $attribut, $freeattribut) ;
 
@@ -37,13 +40,21 @@ class plgJshoppingCheckoutQuickOrder_checkout extends JPlugin
             $order->order_created = 1;
             $order->store();
             $order->updateProductsInStock(1);
+            $this->order = $order ;
+            $result['html'] = $this->loadTemplate( 'order_accept' ) ;
 
-            /*$orderTable = JSFactory::getTable('order', 'jshop');
-            $orderTable->load($order->order_id);
-            $orderTable->order_created = 1;
-            $dispatcher->trigger('onBeforeAdminFinishOrder', array(&$order));
-            $orderTable->store();
-            $orderTable->updateProductsInStock(1);*/
+            $registry = new \Joomla\Registry\Registry();
+            $registry->loadObject($order) ;
+            $result['orderDetail'] = $registry->toObject();
+
+
+            
+
+            echo new JResponseJson($result);
+            die();
+
+
+            
             
 
         }
@@ -61,7 +72,34 @@ class plgJshoppingCheckoutQuickOrder_checkout extends JPlugin
 
     }
 
-
+    /**
+     * Загрузите файл макета плагина. Эти файлы могут быть переопределены с помощью стандартного Joomla! Шаблон
+     *
+     * Переопределение :
+     *                  JPATH_THEMES . /html/plg_{TYPE}_{NAME}/{$layout}.php
+     *                  JPATH_PLUGINS . /{TYPE}/{NAME}/tmpl/{$layout}.php
+     *                  or default : JPATH_PLUGINS . /{TYPE}/{NAME}/tmpl/default.php
+     *
+     *
+     * переопределяет. Load a plugin layout file. These files can be overridden with standard Joomla! template
+     * overrides.
+     *
+     * @param string $layout The layout file to load
+     * @param array  $params An array passed verbatim to the layout file as the `$params` variable
+     *
+     * @return  string  The rendered contents of the file
+     *
+     * @since   5.4.1
+     * @todo Add temlate
+     */
+    private function loadTemplate ( $layout = 'default' )
+    {
+        $path = \Joomla\CMS\Plugin\PluginHelper::getLayoutPath( 'jshoppingproducts', 'quickorder', $layout );
+        // Render the layout
+        ob_start();
+        include $path;
+        return ob_get_clean();
+    }
 
 
 
