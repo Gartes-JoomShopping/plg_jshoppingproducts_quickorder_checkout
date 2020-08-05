@@ -41,6 +41,16 @@ class plgJshoppingCheckoutQuickOrder_checkout extends JPlugin
             $order->store();
             $order->updateProductsInStock(1);
             $this->order = $order ;
+
+
+
+
+
+
+            $checkout = \JSFactory::getModel('checkout', 'jshop');
+            $checkout->sendOrderEmail($order->order_id,  1);
+
+
             $result['html'] = $this->loadTemplate( 'order_accept' ) ;
 
             $registry = new \Joomla\Registry\Registry();
