@@ -21,9 +21,13 @@ class plgJshoppingCheckoutQuickOrder_checkout extends JPlugin
         $adv_user = JSFactory::getUser();
         $adv_user->l_name = $this->app->input->get('l_name' , null , 'STRING' ) ;
         $adv_user->phone = $this->app->input->get('phone' , null  ) ;
+        $adv_user->phone = '+'. preg_replace('/[^\d]/' , '' , $adv_user->phone ) ;
         $category_id = $this->app->input->get('category_id' , null , 'INT') ;
         $product_id = $this->app->input->get('product_id' , null , 'INT' ) ;
         $quantity = 1 ;
+
+
+
 
 
 
